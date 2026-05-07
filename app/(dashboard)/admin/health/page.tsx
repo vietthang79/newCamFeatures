@@ -89,7 +89,7 @@ const companyColumns: ColumnDef<Company>[] = [
    },
    {
       key: "fpm",
-      header: "FPM (5min)",
+      header: "FPS (5sec)",
       sortable: true,
       sortType: "number",
       sortValue: (c) =>
@@ -159,7 +159,7 @@ const cameraSubColumns: ColumnDef<Cam>[] = [
    },
    {
       key: "fpm",
-      header: "FPM",
+      header: "FPS",
       sortable: true,
       sortType: "number",
       sortValue: (c) => (cameraStatus(c.last_frame_at) === "online" ? 24.6 : 0),

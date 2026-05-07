@@ -1,5 +1,5 @@
 "use client";
-import { Pencil, RefreshCw, Save, Trash2 } from "lucide-react";
+import { Pencil, Save, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
    Select,
@@ -20,19 +20,17 @@ interface ZoneToolbarProps {
    onZoneTypeChange: (t: ZoneType) => void;
    mode: DrawMode;
    onToggleDraw: () => void;
-   onRefresh: () => void;
    onSave: () => void;
    onDeleteSelected: () => void;
    hasSelectedZone: boolean;
    hasZones: boolean;
-   refreshing: boolean;
    saving: boolean;
 }
 
 const ZONE_LABELS: Record<ZoneType, string> = {
-   parking_zone: "Parking Zone",
-   entrance_zone: "Entrance Zone",
-   no_smoking_zone: "No Smoking Zone",
+   parking_zone: "Parking Geo-zone",
+   entrance_zone: "Entrance Geo-zone",
+   no_smoking_zone: "No Smoking Geo-zone",
 };
 
 export function ZoneToolbar({
@@ -40,12 +38,10 @@ export function ZoneToolbar({
    onZoneTypeChange,
    mode,
    onToggleDraw,
-   onRefresh,
    onSave,
    onDeleteSelected,
    hasSelectedZone,
    hasZones,
-   refreshing,
    saving,
 }: ZoneToolbarProps) {
    return (
@@ -62,9 +58,9 @@ export function ZoneToolbar({
                <SelectValue />
             </SelectTrigger>
             <SelectContent>
-               <SelectItem value="parking_zone">Parking Zone</SelectItem>
-               <SelectItem value="entrance_zone">Entrance Zone</SelectItem>
-               <SelectItem value="no_smoking_zone">No Smoking Zone</SelectItem>
+               <SelectItem value="parking_zone">Parking Geo-zone</SelectItem>
+               <SelectItem value="entrance_zone">Entrance Geo-zone</SelectItem>
+               <SelectItem value="no_smoking_zone">No Smoking Geo-zone</SelectItem>
             </SelectContent>
          </Select>
 
@@ -76,7 +72,7 @@ export function ZoneToolbar({
             className={cn(mode === "drawing" && "ring-2 ring-primary/50")}
          >
             <Pencil className="h-3.5 w-3.5" />
-            {mode === "drawing" ? "Drawing…" : "Draw Polygon"}
+            {mode === "drawing" ? "Drawing…" : "Draw Geo-zone"}
          </Button>
 
          {/* Delete selected */}
@@ -85,30 +81,18 @@ export function ZoneToolbar({
                trigger={
                   <Button variant="destructive" size="sm">
                      <Trash2 className="h-3.5 w-3.5" />
-                     Delete Zone
+                     Delete Geo-zone
                   </Button>
                }
-               title="Delete Zone"
-               description="This zone will be permanently removed. This cannot be undone."
-               confirmLabel="Delete Zone"
+               title="Delete Geo-zone"
+               description="This geo-zone will be permanently removed. This cannot be undone."
+               confirmLabel="Delete Geo-zone"
                onConfirm={onDeleteSelected}
             />
          )}
 
          {/* Spacer */}
          <div className="flex-1" />
-
-         {/* Refresh */}
-         <LoadingButton
-            variant="outline"
-            size="sm"
-            loading={refreshing}
-            loadingText="Refreshing…"
-            onClick={onRefresh}
-         >
-            <RefreshCw className="h-3.5 w-3.5" />
-            Refresh Snapshot
-         </LoadingButton>
 
          {/* Save */}
          <LoadingButton
@@ -119,7 +103,7 @@ export function ZoneToolbar({
             disabled={!hasZones}
          >
             <Save className="h-3.5 w-3.5" />
-            Save Zones
+            Save Geo-zones
          </LoadingButton>
       </div>
    );

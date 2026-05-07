@@ -1,9 +1,11 @@
 "use client";
 import { useState, useCallback } from "react";
 import dynamic from "next/dynamic";
+import { ScanLine, Layers } from "lucide-react";
 import { MOCK_CAMERAS, MOCK_ZONES } from "@/lib/mock-data";
 import { ZoneToolbar } from "@/components/zones/zone-toolbar";
 import { ZoneList } from "@/components/zones/zone-list";
+import { SectionCard } from "@/components/shared/section-card";
 import { toast } from "sonner";
 import type {
    CanvasZone,
@@ -35,7 +37,7 @@ const ZoneEditor = dynamic<ZoneEditorProps>(
 
 type DrawMode = "idle" | "drawing";
 
-export default function ZonesPage({ params }: { params: { id: string } }) {
+export default function GeoZonesPage({ params }: { params: { id: string } }) {
    const camera =
       MOCK_CAMERAS.find((c) => c.id === params.id) ?? MOCK_CAMERAS[0];
 
@@ -45,7 +47,6 @@ export default function ZonesPage({ params }: { params: { id: string } }) {
       toCanvasZones(MOCK_ZONES.filter((z) => z.camera_id === camera.id)),
    );
    const [selectedId, setSelectedId] = useState<string | null>(null);
-   const [refreshing, setRefreshing] = useState(false);
    const [saving, setSaving] = useState(false);
 
    const handleZonesChange = useCallback((updated: CanvasZone[]) => {
@@ -59,19 +60,13 @@ export default function ZonesPage({ params }: { params: { id: string } }) {
       setMode((m) => (m === "drawing" ? "idle" : "drawing"));
    };
 
-   const handleRefresh = async () => {
-      setRefreshing(true);
-      await new Promise((r) => setTimeout(r, 1500));
-      setRefreshing(false);
-      toast.success("Snapshot refreshed");
-   };
 
    const handleSave = async () => {
       setSaving(true);
       await new Promise((r) => setTimeout(r, 1000));
       setSaving(false);
       toast.success(
-         `${zones.length} zone${zones.length !== 1 ? "s" : ""} saved`,
+         `${zones.length} geo-zone${zones.length !== 1 ? "s" : ""} saved`,
       );
    };
 
@@ -79,13 +74,13 @@ export default function ZonesPage({ params }: { params: { id: string } }) {
       if (!selectedId) return;
       setZones((prev) => prev.filter((z) => z.id !== selectedId));
       setSelectedId(null);
-      toast.success("Zone deleted");
+      toast.success("Geo-zone deleted");
    };
 
    const handleDeleteById = (id: string) => {
       setZones((prev) => prev.filter((z) => z.id !== id));
       if (selectedId === id) setSelectedId(null);
-      toast.success("Zone deleted");
+      toast.success("Geo-zone deleted");
    };
 
    const hasSelected = zones.some((z) => z.id === selectedId);
@@ -97,40 +92,56 @@ export default function ZonesPage({ params }: { params: { id: string } }) {
             onZoneTypeChange={setZoneType}
             mode={mode}
             onToggleDraw={handleToggleDraw}
-            onRefresh={handleRefresh}
             onSave={handleSave}
             onDeleteSelected={handleDeleteSelected}
             hasSelectedZone={hasSelected}
             hasZones={zones.length > 0}
-            refreshing={refreshing}
             saving={saving}
          />
 
-         <ZoneEditor
-            zones={zones}
-            activeZoneType={zoneType}
-            mode={mode}
-            onModeChange={setMode}
-            onZonesChange={handleZonesChange}
-            selectedId={selectedId}
-            onSelectId={setSelectedId}
-         />
+         <div className="grid gap-4 lg:grid-cols-5">
+            {/* Left: Zone Canvas */}
+            <SectionCard
+               icon={ScanLine}
+               iconColor="text-violet-500"
+               iconBg="bg-violet-50"
+               title="Geo-zone Canvas"
+               subtitle="Draw and position detection geo-zones"
+               contentClassName="p-3"
+               className="lg:col-span-3"
+            >
+               <ZoneEditor
+                  zones={zones}
+                  activeZoneType={zoneType}
+                  mode={mode}
+                  onModeChange={setMode}
+                  onZonesChange={handleZonesChange}
+                  selectedId={selectedId}
+                  onSelectId={setSelectedId}
+               />
+            </SectionCard>
 
-         <div className="rounded-lg border border-gray-200 bg-white p-4">
-            <h3 className="mb-3 text-sm font-medium text-gray-700">
-               Zones ({zones.length})
-            </h3>
-            <ZoneList
-               zones={zones}
-               selectedId={selectedId}
-               onSelect={(id) => {
-                  setSelectedId(id);
-                  setZones((prev) =>
-                     prev.map((z) => ({ ...z, selected: z.id === id })),
-                  );
-               }}
-               onDelete={handleDeleteById}
-            />
+            {/* Right: Zone List */}
+            <SectionCard
+               icon={Layers}
+               iconColor="text-indigo-500"
+               iconBg="bg-indigo-50"
+               title="Geo-zones"
+               subtitle={`${zones.length} geo-zone${zones.length !== 1 ? "s" : ""} configured`}
+               className="lg:col-span-2"
+            >
+               <ZoneList
+                  zones={zones}
+                  selectedId={selectedId}
+                  onSelect={(id) => {
+                     setSelectedId(id);
+                     setZones((prev) =>
+                        prev.map((z) => ({ ...z, selected: z.id === id })),
+                     );
+                  }}
+                  onDelete={handleDeleteById}
+               />
+            </SectionCard>
          </div>
       </div>
    );

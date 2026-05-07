@@ -6,7 +6,7 @@ import Konva from "konva";
 type ZoneType = "parking_zone" | "entrance_zone" | "no_smoking_zone";
 type DrawMode = "idle" | "drawing";
 
-const ZONE_COLORS: Record<ZoneType, string> = {
+export const ZONE_COLORS: Record<ZoneType, string> = {
    parking_zone: "#93D500",
    entrance_zone: "#22C55E",
    no_smoking_zone: "#EF4444",
@@ -28,6 +28,7 @@ export interface ZoneEditorProps {
    onZonesChange: (zones: CanvasZone[]) => void;
    selectedId: string | null;
    onSelectId: (id: string | null) => void;
+   readOnly?: boolean;
 }
 
 function normToPx(
@@ -54,6 +55,7 @@ export function ZoneEditor({
    onZonesChange,
    selectedId,
    onSelectId,
+   readOnly = false,
 }: ZoneEditorProps) {
    const containerRef = useRef<HTMLDivElement>(null);
    const stageRef = useRef<Konva.Stage>(null);
@@ -196,7 +198,7 @@ export function ZoneEditor({
          style={{
             width: "100%",
             height: size.h,
-            cursor: mode === "drawing" ? "crosshair" : "default",
+            cursor: !readOnly && mode === "drawing" ? "crosshair" : "default",
          }}
          className="rounded-lg overflow-hidden border border-gray-200"
       >
@@ -204,9 +206,9 @@ export function ZoneEditor({
             ref={stageRef}
             width={size.w}
             height={size.h}
-            onClick={handleStageClick}
-            onMouseMove={handleMouseMove}
-            onMouseDown={handleStageMouseDown}
+            onClick={readOnly ? undefined : handleStageClick}
+            onMouseMove={readOnly ? undefined : handleMouseMove}
+            onMouseDown={readOnly ? undefined : handleStageMouseDown}
          >
             {/* Background layer: fake HD parking lot scene */}
             <Layer listening={false}>
@@ -224,15 +226,14 @@ export function ZoneEditor({
                   return (
                      <Group
                         key={zone.id}
-                        draggable={isSelected}
-                        onDragEnd={(e) => {
-                           // Guard: only handle when the Group itself was dragged
+                        draggable={!readOnly && isSelected}
+                        onDragEnd={readOnly ? undefined : (e) => {
                            if (!(e.target instanceof Konva.Group)) return;
                            const g = e.target;
                            moveZone(zone.id, g.x(), g.y());
                            g.position({ x: 0, y: 0 });
                         }}
-                        onClick={() => handlePolygonClick(zone.id)}
+                        onClick={readOnly ? undefined : () => handlePolygonClick(zone.id)}
                      >
                         <Line
                            points={flatPx(pxPts)}
@@ -243,7 +244,7 @@ export function ZoneEditor({
                            opacity={isSelected ? 1 : 0.7}
                            hitStrokeWidth={8}
                         />
-                        {isSelected &&
+                        {!readOnly && isSelected &&
                            pxPts.map((pt, i) => (
                               <Circle
                                  key={i}

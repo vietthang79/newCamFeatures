@@ -5,10 +5,10 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import type { CanvasZone, ZoneType } from './zone-editor'
 
-const ZONE_LABELS: Record<ZoneType, string> = {
-  parking_zone: 'Parking Zone',
-  entrance_zone: 'Entrance Zone',
-  no_smoking_zone: 'No Smoking Zone',
+export const ZONE_LABELS: Record<ZoneType, string> = {
+  parking_zone: 'Parking Geo-zone',
+  entrance_zone: 'Entrance Geo-zone',
+  no_smoking_zone: 'No Smoking Geo-zone',
 }
 
 const ZONE_VARIANTS: Record<ZoneType, 'default' | 'success' | 'destructive'> = {
@@ -28,7 +28,7 @@ export function ZoneList({ zones, selectedId, onSelect, onDelete }: ZoneListProp
   if (zones.length === 0) {
     return (
       <p className="py-4 text-center text-sm text-gray-400">
-        No zones drawn yet. Use "Draw Polygon" to start.
+        No geo-zones drawn yet. Use "Draw Geo-zone" to start.
       </p>
     )
   }
@@ -49,7 +49,7 @@ export function ZoneList({ zones, selectedId, onSelect, onDelete }: ZoneListProp
           <Badge variant={ZONE_VARIANTS[zone.type]} className="text-xs">
             {ZONE_LABELS[zone.type]}
           </Badge>
-          <span className="flex-1 text-sm text-gray-700">Zone {i + 1}</span>
+          <span className="flex-1 text-sm text-gray-700">Geo-zone {i + 1}</span>
           <span className="text-xs text-gray-400">{zone.points.length} pts</span>
           <Button
             variant="ghost"

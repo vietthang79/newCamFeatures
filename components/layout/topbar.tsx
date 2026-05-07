@@ -12,7 +12,7 @@ const CRUMB_MAP: Record<string, string> = {
   new: 'New',
   overview: 'Overview',
   configuration: 'Configuration',
-  zones: 'Zones',
+  'geo-zones': 'Geo-zones',
   health: 'Health',
   admin: 'Admin',
   companies: 'Companies',

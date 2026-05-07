@@ -50,7 +50,7 @@ export default function HealthPage({ params }: { params: { id: string } }) {
       {
          label: "Frames/min (5m)",
          value: camera.last_frame_at ? "24.6" : "0",
-         unit: "FPM",
+         unit: "FPS",
          icon: Activity,
          color: "text-pri-text",
       },
